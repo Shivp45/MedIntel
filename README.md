@@ -59,4 +59,160 @@ Doctor queries are converted into embeddings and matched against the **vector in
 
 
 
+# Images 
 
+Image1
+![Image2](./public/Image1.png)  
+
+Image2
+![Image2](./public/Image2.png)  
+
+Image3
+![Image3](./public/Image3.png)  
+
+Image4
+![Image4](./public/Image4.png)  
+
+Image5
+![Image5](./public/Image5.png)  
+
+
+
+
+
+# Installation and Setup
+
+1️⃣ Clone the Repository 
+
+```
+    git clone https://github.com/Shivp45/MedIntel.git  
+    cd MedIntel
+```
+
+2️⃣ Activate your virtual environment
+
+```
+    python -m venv ai_service  
+    ai_service\Scripts\activate
+```
+
+3️⃣ Install dependencies
+
+```
+    pip install -r requirements.txt
+```
+
+4️⃣ Add medical PDFs  
+Copy your medical research papers, guidelines, toxicology, drug docs into:
+
+```
+    data/*/*
+```
+5️⃣ Run document ingestion (creates vector DB + index)  
+Only if you add new data file/files...
+
+```
+    python backend/ingest_data.py   
+```
+Expected output should show:  
+```
+    ✔ 32 PDFs detected  
+    ✔ ~4688 chunks embedded  
+    ✔ Vector DB stored in embeddings/chroma/ (with chroma.sqlite3 inside it)
+```
+
+6️⃣ (Optional) Verify vector index is working  
+
+```
+    python verify_index.py
+```
+
+This will test semantic search like:  
+
+```
+    "What are common medical treatments?" → returns 3 similar chunks
+```
+
+7️⃣ Run the doctor chat UI  
+
+```
+    streamlit run app.py
+```
+
+The app will open automatically in your browser at:  
+
+```
+    http://localhost:8501
+```    
+
+
+
+# Flow Diagram  
+
+                    ┌──────────────────────┐
+                    │  data/ (PDF files)   │
+                    └──────────┬───────────┘
+                               ▼
+                    ┌──────────────────────┐
+                    │  ingest_data.py      │
+                    │  - Extract text      │
+                    │  - Chunk docs        │
+                    │  - Generate embeds   │
+                    │  - Store in Chroma   │
+                    └──────────┬───────────┘
+                               ▼
+                    ┌────────────────────────────┐
+                    │ embeddings/chroma/ (DB)   │
+                    │  Vector Index Stored Here  │
+                    └──────────┬────────────────┘
+                               ▼
+                    ┌──────────────────────┐
+                    │  rag_pipeline.py     │
+                    │  - Embed query       │
+                    │  - Retrieve top K    │
+                    │  - Send context → LLM│
+                    └──────────┬───────────┘
+                               ▼
+         ┌────────────── Groq API (Primary LLM) ───────────────┐
+         │                Model: Llama 3.1-8B                  │
+         └───────────────┬───────────────────────┬─────────────┘
+                         │  (if fails 401/timeout)│
+                         ▼                       │
+         ┌──────────── OpenAI API (Fallback LLM) │
+         │           Model: GPT-4o-mini          │
+         └────────────┬──────────────────────────┘
+                      ▼
+                    ┌──────────────────────┐
+                    │  app.py (Streamlit UI)│
+                    │  - Show answer        │
+                    │  - Show sources       │
+                    │  - Safety alerts      │
+                    └──────────┬───────────┘
+                               ▼
+                    ┌──────────────────────┐
+                    │ evaluate_rag.py      │
+                    │ - Retrieval metrics  │
+                    │ - Keyword grounding  │
+                    └──────────┬───────────┘
+                               ▼
+                    ┌──────────────────────┐
+                    │ verify_index.py      │
+                    │ - Test vector search │
+                    │ - Check DB integrity │
+                    └──────────────────────┘
+
+
+
+[Doctor Query] → [Embed Query]
+       ↓
+[Retrieve Top 5 Chunks from ChromaDB]
+       ↓
+[Send Context + Query to Groq (Llama 3.1-8B)]
+       ↓
+{If fails}
+       ↓
+[OpenAI Fallback (GPT-4o-mini)]
+       ↓
+[Return Answer + Sources + Safety Warnings]
+       ↓
+[Display in Streamlit UI]
