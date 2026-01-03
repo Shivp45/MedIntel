@@ -1,0 +1,7 @@
+.env
+__pycache__/
+embeddings/chroma/
+*.log
+models/
+ai_service/
+uninstall.txt

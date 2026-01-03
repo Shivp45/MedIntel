@@ -1,0 +1,50 @@
+# Open AI (At the start)
+
+# langchain
+# langchain-community
+# langchain-core
+# langchain-chroma
+# langchain-huggingface
+# langchain-openai
+# python-dotenv
+# streamlit
+# groq
+# PyMuPDF
+# openai
+
+
+
+# Claude
+
+# streamlit==1.31.0
+# langchain==0.1.9
+# langchain-community==0.0.24
+# chromadb==0.4.22
+# sentence-transformers==2.3.1
+# PyPDF2==3.0.1
+# python-dotenv==1.0.1
+# groq==0.4.2
+# openai==1.12.0
+# tiktoken==0.5.2
+# numpy==1.24.3
+# pandas==2.2.0
+# torch==2.1.2
+# tqdm==4.66.1
+
+
+# Claude (Final)
+
+langchain
+langchain-community
+langchain-core
+langchain-chroma
+langchain-huggingface
+langchain-openai
+langchain-text-splitters
+python-dotenv
+streamlit
+groq
+PyMuPDF
+openai
+tqdm
+sentence-transformers
